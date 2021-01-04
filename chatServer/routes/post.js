@@ -21,7 +21,7 @@ let storage = multer.diskStorage({
 let upload = multer({ storage: storage})
 
 // 阿里云上传图片
-router.post('/uploadimgaliyun', upload.single('image'), async function(req, res, next) {
+router.post('/uploadImgAliyun', upload.single('image'), async function(req, res, next) {
   const OSS = require('ali-oss')
   const client = new OSS({
     region: 'oss-cn-beijing',
@@ -34,8 +34,8 @@ router.post('/uploadimgaliyun', upload.single('image'), async function(req, res,
   let result = await client.put(file.filename, file.path)
   console.log(result)
   res.json({
-    code: 0,
-    data: {
+    code: 200,
+    result: {
       url: result.url,
       size: demensions
     }
@@ -45,7 +45,7 @@ router.post('/uploadimgaliyun', upload.single('image'), async function(req, res,
 })
 
 // 保存提交的动态
-router.post('/savepost', async function (req, res, next) {
+router.post('/publishPost', async function (req, res, next) {
   let userId = req.user._id
   let postData = {
     content: req.body.content,
@@ -56,17 +56,17 @@ router.post('/savepost', async function (req, res, next) {
     let result = await Post.create(postData)
     res.json({
       code: 0,
-      data: result
+      result
     })
   } catch (e){
     res.json({
-      code: -1,
-      data: e
+      code: 400,
+      result: -1
     })
   }
 })
 // 点赞
-router.post('/addlike', async function (req, res, next) {
+router.post('/addLike', async function (req, res, next) {
   let postId = req.body.postId
   let userId = req.user._id
   try {
@@ -75,18 +75,18 @@ router.post('/addlike', async function (req, res, next) {
       user: userId
     })
     res.json({
-      code: 0,
-      data: result
+      code: 200,
+      result
     })
   } catch (e) {
     res.json({
-      code: -1,
-      data: {err: '点赞失败'}
+      code: 400,
+      result: -1
     })
   }
 })
 // 取消点赞
-router.post('/cancellike', async function (req, res, next) {
+router.post('/cancelLike', async function (req, res, next) {
   let postId = req.body.postId
   let userId = req.user._id
   try {
@@ -95,19 +95,19 @@ router.post('/cancellike', async function (req, res, next) {
       user: userId
     })
     res.json({
-      code: 0,
-      data: result
+      code: 200,
+      result
     })
   } catch (e) {
     res.json({
-      code: -1,
-      data: {err: '取消失败'}
+      code: 400,
+      result: -1
     })
   }
 })
 
 // 评论
-router.post('/addcomment', async function (req, res, next) {
+router.post('/addComment', async function (req, res, next) {
   let postId = req.body.postId
   let userId = req.user._id
   let content = req.body.content
@@ -118,24 +118,24 @@ router.post('/addcomment', async function (req, res, next) {
       content
     })
     res.json({
-      code: 0,
-      data: result
+      code: 200,
+      result
     })
   } catch (error) {
     res.json({
-      code: -1,
-      data: {err: '评论失败'}
+      code: 400,
+      result: -1
     })
   }
 })
 
 // 获取post数据
-router.get('/getpostlist', async function (req, res, next) {
+router.get('/getPostList', async function (req, res, next) {
   // 分页数据大小
   let pageSize = 5
   //  获取起始索引
   let pageStart = req.query.pageStart || 0
-
+  console.log(req.query)
   let posts = await Post.find()
   .skip(pageSize * pageStart)
   .limit(pageSize)
@@ -156,8 +156,8 @@ router.get('/getpostlist', async function (req, res, next) {
     result.push(post)
   }
   res.json({
-    code: 0,
-    data: result
+    code: 200,
+    result
   })
 })
 // 根据post查询comment

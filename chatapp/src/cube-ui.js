@@ -15,8 +15,12 @@ import {
   Upload,
   Scroll,
   Swipe,
-  IndexList
+  IndexList,
+  Input,
+  Toast,
+  Popup
 } from 'cube-ui'
+import vueConfig from '../vue.config'
 
 Vue.use(Scroll)
 Vue.use(Swipe)
@@ -25,3 +29,6 @@ Vue.use(Upload)
 Vue.use(Dialog)
 Vue.use(ImagePreview)
 Vue.use(Loading)
+Vue.use(Input)
+Vue.use(Toast)
+Vue.use(Popup)

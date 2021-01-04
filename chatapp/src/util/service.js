@@ -19,7 +19,7 @@ service.interceptors.response.use(
 )
 function get (url, params = {}) {
   return service({
-    url: url,
+    url,
     method: 'get',
     headers: {
       'wec-access-token': getCookie('token')

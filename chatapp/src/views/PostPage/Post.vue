@@ -1,10 +1,10 @@
 <template>
  <div class="mine-wrapper">
-    <my-head :title="title" class='top' ref="top" @rightClick="publish">
+    <nav-head :title="title" class='top' ref="top" @rightClick="publish">
       <template v-slot:right>
         <i class="iconfont icon-icon_add"></i>
       </template>
-    </my-head>
+    </nav-head>
    <cube-scroll
    ref="scroll"
    :data='postList'
@@ -53,11 +53,11 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
-import MyHead from 'components/base/MyHead'
-import Avatar from 'components/base/Avatar'
-import PostItem from 'components/postItem/postItem'
-import service from '@/util/service'
-import formatTime from '@/util/formatTime'
+import NavHead from '_c/base/NavHead'
+import Avatar from '_c/base/Avatar'
+import PostItem from '_c/postItem/postItem'
+import service from '_u/service'
+import formatTime from '_u/formatTime'
 export default {
   data () {
     return {
@@ -97,7 +97,7 @@ export default {
     ])
   },
   components: {
-    MyHead,
+    NavHead,
     Avatar,
     PostItem
   },
@@ -116,12 +116,13 @@ export default {
     },
     // 获取数据
     async fetchData () {
-      const response = await service.get('post/getpostlist')
-      if (response.code === 0) {
-        if (response.data.length === 0) {
+      const res = await service.get('post/getpostlist')
+      if (res && res.code === 200) {
+        const result = res.result
+        if (result.length === 0) {
           this.hasMore = false
         }
-        this.postList = this.formatData(response.data)
+        this.postList = this.formatData(result)
       } else {
         console.log('获取数据失败')
       }
@@ -129,7 +130,7 @@ export default {
     // 点击发表动态
     publish () {
       this.$router.push({
-        path: '/mine/publish'
+        path: '/post/publish'
       })
     },
     // 监听滚动
@@ -164,11 +165,11 @@ export default {
     // 上拉加载
     async onPullingUp () {
       if (this.hasMore) {
-        const response = await service.get('post/getpostlist', {
+        const res = await service.get('post/getpostlist', {
           pageStart: this.pageStart + 1
         })
-        if (response.code === 0) {
-          const dataList = response.data
+        if (res && res.code === 200) {
+          const dataList = res.result
           if (dataList.length === 0) {
             this.hasMore = false
           } else {

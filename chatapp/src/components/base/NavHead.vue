@@ -3,7 +3,9 @@
     <div class="head-left" @click="leftClick">
       <slot name="left"></slot>
     </div>
-    <div class="title">{{this.title}}</div>
+    <div class="title">
+      <slot>{{title}}</slot>
+    </div>
     <div class="head-right" @click="rightClick">
       <slot name="right"></slot>
     </div>
@@ -38,7 +40,7 @@ export default {
   height: 40px;
   padding: 5px 10px;
   line-height: 40px;
-  background: white;
+  background: #f7f7f7;
   .title {
     position: absolute;
     left: 50%;

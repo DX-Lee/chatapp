@@ -1,4 +1,5 @@
 import moment from 'moment'
+// 格式化时间
 export default function formatTime (target) {
   return moment(target).calendar(null, {
     sameDay: '[今天] HH:mm',

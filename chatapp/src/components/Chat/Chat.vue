@@ -1,12 +1,15 @@
 <template>
     <div class="chat-wrapper">
-      <div class="header">
-        <i>hh</i>
-        <span>好友</span>
-      </div>
-      <div class="content">
-        <chat-item></chat-item>
-        <chat-item :isMine="false"></chat-item>
+      <nav-head class="nav" :title="friendName" @leftClick="onBack">
+        <template v-slot:left>
+          <i class="iconfont icon-arrow-left"></i>
+        </template>
+      </nav-head>
+      <div class="chat-panel">
+        <cube-scroll>
+          <chat-item></chat-item>
+          <chat-item :isMine="false"></chat-item>
+        </cube-scroll>
       </div>
       <div class="bottom">
         <input class="input-box" type="text">
@@ -16,15 +19,23 @@
 </template>
 <script>
 import ChatItem from './ChatItem'
+import NavHead from '_c/base/NavHead'
 export default {
   data () {
     return {
+      friendName: '你好',
+      options: {}
     }
   },
   components: {
-    ChatItem
+    ChatItem,
+    NavHead
   },
   methods: {
+    // 返回
+    onBack () {
+      this.$router.go(-1)
+    },
     getChatMessage () {
       this.chatMessage = []
     },
@@ -48,14 +59,15 @@ export default {
     bottom: 0;
     z-index: 300;
     background: #f2f2f2;
-    .header {
-      height: 40px;
-      padding: 5px;
-      line-height: 40px;
-      text-align: center;
-      background: #ccc;
+    .nav {
+      background: #f7f7f7;
+      color: #000;
+      .icon-arrow-left {
+        font-size: 40px;
+      }
     }
-    .content {
+    .chat-panel {
+      margin-top: 50px;
       flex: 1
     }
     .bottom {

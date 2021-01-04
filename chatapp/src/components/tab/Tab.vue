@@ -6,7 +6,7 @@
     <router-link tag="div" class="item" to="/group">
     <span class="iconfont icon-sub-account"></span>
     </router-link>
-    <router-link tag="div" class="item" to="/mine">
+    <router-link tag="div" class="item" to="/post">
     <i class="iconfont icon-user"></i>
     </router-link>
   </div>

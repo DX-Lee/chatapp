@@ -48,8 +48,8 @@
 </template>
 
 <script>
-import Avatar from 'components/base/Avatar'
-import service from '@/util/service'
+import Avatar from '_c/base/Avatar'
+import service from '_u/service'
 import { mapGetters } from 'vuex'
 export default {
   props: {
@@ -96,12 +96,12 @@ export default {
     },
     // 点赞
     async addLike () {
-      const response = await service.post('post/addlike', {
+      const res = await service.post('post/addlike', {
         postId: this.postData.id
       })
-      if (response.code === 0) {
+      if (res && res.code === 200) {
         this.postData.isLike = true
-        console.log(response.data)
+        console.log(res.result)
         this.postData.likeList.push({
           post: this.postData.id,
           user: this.user
@@ -113,10 +113,10 @@ export default {
     },
     // 取消点赞
     async cancelLike () {
-      const response = await service.post('post/cancelLike', {
+      const res = await service.post('post/cancelLike', {
         postId: this.postData.id
       })
-      if (response.code === 0) {
+      if (res && res.code === 200) {
         this.postData.isLike = false
         const index = this.postData.likeList.findIndex((item) => {
           return item.user._id === this.user._id
@@ -130,14 +130,14 @@ export default {
     async send () {
       const value = this.$refs.inputbox.value
       if (value) {
-        const resp = await service.post('post/addcomment', {
+        const res = await service.post('post/addcomment', {
           postId: this.postData.id,
           content: value
         })
-        if (resp.code === 0) {
-          console.log(resp.data)
+        if (res && res.code === 200) {
+          console.log(res.result)
           this.postData.comments.push({
-            content: resp.data.content,
+            content: res.result.content,
             user: this.user
           })
         } else {
@@ -214,8 +214,8 @@ export default {
     padding: 5px 0px;
     .like {
       float: right;
-      margin-right: 20px;
-      .icon-dianzan {
+      margin-right: 0px;
+      .iconfont {
         font-size: 24px;
       }
     }

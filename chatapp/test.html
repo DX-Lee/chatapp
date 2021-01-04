@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .parent {
+      width: 100%;
+      height: 800px;
+      position: relative;
+    }
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      text-align: center;
+      background-color: rgba(247, 247, 247, 0);
+    }
+    .bg {
+      width: 100%;
+      height: 140px;
+      background-image: url(./下载.jpg);
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .panel {
+      width: 100%;
+      height: 500px;
+      background-color: red;
+      opacity: 0.5;
+    }
+    .child {
+      position: absolute;
+      top: 50px;
+      left: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="parent">
+    <div class="nav">
+      标题
+    </div>
+    <div class="bg"></div>
+    <div class="panel">
+    </div>
+    <div class="child">
+      背景透明，文字不透明
+    </div>
+  </div>
+  <script>
+    let start = null
+    window.ontouchstart = (e) => {
+      start = {}
+      start.x  = e.touches[0].pageX
+      start.y = e.touches[0].pageY
+    }
+    window.ontouchmove = (e) => {
+      if (start) {
+        let pos = e.touches[0]
+        let y = pos.pageY - pos.clientY
+        let percent = Math.min(1 ,y / 140)
+        let nav = document.querySelector('.nav')
+        nav.style.backgroundColor = `rgba(247,247,247,${percent})`
+      }
+    }
+    window.ontouchend = (e) => {
+      start = null
+    }
+  </script>
+</body>
+</html>

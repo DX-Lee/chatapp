@@ -13,7 +13,7 @@
   </div>
 </template>
 <script>
-import Avatar from 'components/base/Avatar'
+import Avatar from './Avatar'
 export default {
   props: {
     // 传进的基本数据

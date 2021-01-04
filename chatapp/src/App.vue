@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-import Tab from 'components/tab/Tab'
+import Tab from '_c/tab/Tab'
 export default {
   components: {
     Tab

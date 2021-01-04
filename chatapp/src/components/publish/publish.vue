@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import { getCookie } from '@/util/cookie'
-import service from '@/util/service'
+import { getCookie } from '_u/cookie'
+import service from '_u/service'
 export default {
   data () {
     return {
@@ -38,7 +38,7 @@ export default {
       textCount: 0,
       picList: [],
       action: {
-        target: service.baseURL + 'post/uploadimgaliyun',
+        target: service.baseURL + 'post/uploadImgAliyun',
         headers: {
           'wec-access-token': getCookie('token')
         },
@@ -51,7 +51,7 @@ export default {
     // 取消
     cancel () {
       this.$router.push({
-        name: 'Mine',
+        name: 'Post',
         params: {
           ispublish: false
         }
@@ -72,16 +72,16 @@ export default {
         dataList = []
       } else {
         dataList = this.picList.map((item) => {
-          return item.response.data
+          return item.response.result
         })
       }
-      const rep = await service.post('post/savepost', {
+      const res = await this.$store.dispatch('publishPost', {
         content: this.content,
         picList: dataList
       })
-      if (rep.code === 0) {
+      if (res.code === 200) {
         this.$router.push({
-          name: 'Mine',
+          name: 'Post',
           params: {
             ispublish: true
           }

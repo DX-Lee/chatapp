@@ -1,12 +1,17 @@
 <template>
 <div class="message-wrapper">
-  <my-head :title="title" class="nav" @leftClick="handleAvatarClick">
+  <nav-head :title="title" class="nav" @leftClick="handleAvatarClick" @rightClick='onAdd'>
     <template v-slot:left>
       <div class="l-head">
         <avatar :imgurl="user.avatar"></avatar>
       </div>
     </template>
-  </my-head>
+    <template v-slot:right>
+      <div class="r-head">
+        <i class="cubeic-add"></i>
+      </div>
+    </template>
+  </nav-head>
   <div class="message-content">
       <cube-scroll ref="scroll" :data="message" :options="scrollOptions" :scroll-events="['scroll']" @pulling-down="onPullingDown" @scroll="onScrollHandle">
          <template v-slot:pulldown="props">
@@ -22,6 +27,9 @@
         </template>
         <div class="inner-content">
           <cube-swipe>
+            <div class="search">
+              <input type="text" class="iconfont icon-search" :placeholder='placeholder'>
+            </div>
             <ul>
               <li v-for="(data, index) in swipeData" :key="data.item.id" class="item">
                 <cube-swipe-item :btns="data.btns"
@@ -45,14 +53,21 @@
         </div>
       </cube-scroll>
   </div>
+  <cube-popup type="add-popup" ref="popup" :visible="showPopup" :maskClosable="true" position='right'>
+    <div class="add-panel">
+      <ul class="panel-list" @click="handlePanelClick">
+        <li class="item" v-for="option in addOptionList" :key="option.id" :data-index="option.id"><i class="cubeic-person"></i>{{option.label}}</li>
+      </ul>
+    </div>
+  </cube-popup>
+  <router-view></router-view>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import ListItem from 'components/base/ListItem'
-import MyHead from 'components/base/MyHead'
-import Avatar from 'components/base/Avatar'
+import ListItem from '_c/base/ListItem'
+import NavHead from '_c/base/NavHead'
+import Avatar from '_c/base/Avatar'
 import { mapGetters } from 'vuex'
 // import service from '../util/service';
 export default {
@@ -62,6 +77,7 @@ export default {
       pullDownStyle: '',
       pullDownY: 0,
       message: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+      placeholder: '\ue63c 搜索',
       swipeData: [
         {
           item: {
@@ -130,7 +146,34 @@ export default {
           stop: 40,
           txt: '更新成功'
         }
-      }
+      },
+      showPopup: false,
+      addOptionList: [
+        {
+          id: 1,
+          label: '创建群聊'
+        },
+        {
+          id: 2,
+          label: '添加好友'
+        },
+        {
+          id: 3,
+          label: '匹配聊天'
+        },
+        {
+          id: 4,
+          label: '一起派对'
+        },
+        {
+          id: 5,
+          label: '扫一扫'
+        },
+        {
+          id: 6,
+          label: '更多'
+        }
+      ]
     }
   },
   computed: {
@@ -145,10 +188,14 @@ export default {
   },
   components: {
     ListItem,
-    MyHead,
+    NavHead,
     Avatar
   },
+  created () {
+    this.getMessage()
+  },
   methods: {
+    // 下拉刷新
     onPullingDown () {
       setTimeout(() => {
         if (Math.random() > 0.4) {
@@ -158,17 +205,21 @@ export default {
         }
       }, 1000)
     },
+    // 滑动控制下拉框提示
     onScrollHandle (pos) {
       this.pullDownY = pos.y
       this.pullDownStyle = `top:${pos.y}px`
     },
+    // 获取消息
     getMessage () {
       console.log(this.$store.state.user)
       console.log('获取消息')
     },
+    // btn点击
     onBtnsClick () {
       console.log('click')
     },
+    // 消息项点击
     onItemClick (uid) {
       this.$router.push({
         path: '/chat',
@@ -177,6 +228,7 @@ export default {
         }
       })
     },
+    // 点击消息头像进入个人信息页
     handleAvatarClick () {
       this.$router.push({
         path: '/person',
@@ -184,10 +236,31 @@ export default {
           id: this.user.id
         }
       })
+    },
+    // 点击添加按钮
+    onAdd () {
+      this.$refs.popup.show()
+    },
+    handlePanelClick (e) {
+      const { index } = e.target.dataset
+      // 2: 添加好友
+      switch (index) {
+        case '2':
+          this.$router.push({
+            path: '/message/searchPerson'
+          })
+          this.$refs.popup.hide()
+          break
+        default:
+          this.$createDialog({
+            type: 'alert',
+            title: '尚未开发',
+            content: '在做了在做了..（指新建文件夹）',
+            icon: 'cubeic-question'
+          }).show()
+          break
+      }
     }
-  },
-  created () {
-    this.getMessage()
   }
 }
 </script>
@@ -200,7 +273,12 @@ export default {
     width: 40px;
     height: 40px;
   }
-.message-content {
+  .r-head {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+  }
+  .message-content {
   position: absolute;
   left: 0;
   right: 0;
@@ -208,6 +286,29 @@ export default {
   bottom: 50px;
   .iconfont {
     font-size: 30px;
+  }
+  .inner-content {
+    .search {
+      width: 100%;
+      height: 40px;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      background-color: #ccc;
+      input {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        outline: 0;
+        padding: 0 10px;
+        box-sizing: border-box;
+        &::placeholder {
+          text-align: center;
+        }
+      }
+      .iconfont {
+        font-size: 16px;
+      }
+    }
   }
     .cube-pulldown-wrapper {
       transform: translateY(-100%);
@@ -231,6 +332,31 @@ export default {
         .timer {
           height: 100%;
         }
+  }
+  .cube-add-popup {
+    .add-panel {
+      position: relative;
+      padding: 10px 20px;
+      margin: 50px 4px 0 0;
+      border-radius: 4px;
+      background: #fff;
+      &::after {
+        position: absolute;
+        right: 20px;
+        top: -19px;
+        content: '';
+        border-width: 10px;
+        border-style: solid;
+        border-color: transparent transparent #ffffff transparent;
+      }
+      .item {
+        padding: 10px;
+        font-size: 18px;
+        i {
+          margin-right: 20px;
+        }
+      }
+    }
   }
 }
 </style>

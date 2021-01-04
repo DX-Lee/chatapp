@@ -1,7 +1,7 @@
 <template>
     <div class="group-wrapper">
-      <my-head :title="title">
-      </my-head>
+      <nav-head :title="title">
+      </nav-head>
       <div class="group-list">
         <cube-index-list :data="cityData">
           <cube-index-list-group
@@ -22,8 +22,8 @@
     </div>
 </template>
 <script>
-import ListItem from 'components/base/ListItem'
-import MyHead from 'components/base/MyHead'
+import ListItem from '_c/base/ListItem'
+import NavHead from '_c/base/NavHead'
 const cityData = [
   {
     name: 'A',
@@ -118,7 +118,7 @@ export default {
   },
   components: {
     ListItem,
-    MyHead
+    NavHead
   },
   methods: {
     selectItem (data) {

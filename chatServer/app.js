@@ -4,8 +4,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const usersRouter = require('./routes/user');
 const postRouter = require('./routes/post')
+const chatRouter = require('./routes/chat')
 
 const tokenUtil = require('./util/token')
 const config = require('./config')
@@ -37,13 +38,13 @@ app.use(function (req, res, next) {
        tokenUtil.setToken({user, res})
        next()
    } else {
-       // 判断是否在登录态白名单上
+       // 判断是否在需要登录态的名单上
       if (config.tokenApi.indexOf(req.path) < 0) {
           next()
           return
         } else {
             res.json({
-              code: 403,
+              code: 401,
               message: '无效token'
           })
         }
@@ -56,6 +57,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/user', usersRouter);
 app.use('/api/post', postRouter);
+app.use('/api/chat', chatRouter);
 module.exports = app;

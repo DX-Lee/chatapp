@@ -14,39 +14,46 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ 'views/Login.vue')
+    component: () => import(/* webpackChunkName: "about" */ '_v/LoginPage/Login.vue')
   },
   {
     path: '/message',
     name: 'Message',
-    component: () => import(/* webpackChunkName: 'message' */ 'views/Message.vue')
+    component: () => import(/* webpackChunkName: 'message' */ '_v/MessagePage/Message.vue'),
+    children: [
+      {
+        path: 'searchPerson',
+        name: 'Search',
+        component: () => import('_c/searchPerson/SearchPerson.vue')
+      }
+    ]
   },
   {
     path: '/group',
     name: 'Group',
-    component: () => import(/* webpackChunkName: "group" */ 'views/Group.vue')
+    component: () => import(/* webpackChunkName: "group" */ '_v/FriendPage/Group.vue')
   },
   {
-    path: '/mine',
-    name: 'Mine',
-    component: () => import(/* webpackChunkName: "about" */ 'views/Mine.vue'),
+    path: '/post',
+    name: 'Post',
+    component: () => import(/* webpackChunkName: "about" */ '_v/PostPage/Post.vue'),
     children: [
       {
         path: 'publish',
         name: 'publish',
-        component: () => import('components/publish/publish.vue')
+        component: () => import('_c/publish/publish.vue')
       }
     ]
   },
   {
     path: '/chat',
     name: 'Chat',
-    component: () => import(/* webpackChunkName: "Chat" */ 'components/Chat/Chat.vue')
+    component: () => import(/* webpackChunkName: "Chat" */ '_c/chat/Chat.vue')
   },
   {
     path: '/person',
     name: 'Person',
-    component: () => import('components/person/person.vue')
+    component: () => import('_c/person/person.vue')
   }
 ]
 
