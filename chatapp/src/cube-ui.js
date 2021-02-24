@@ -15,7 +15,13 @@ import {
   Upload,
   Scroll,
   Swipe,
-  IndexList
+  IndexList,
+  Input,
+  Toast,
+  Popup,
+  Picker,
+  DatePicker,
+  CascadePicker
 } from 'cube-ui'
 
 Vue.use(Scroll)
@@ -25,3 +31,9 @@ Vue.use(Upload)
 Vue.use(Dialog)
 Vue.use(ImagePreview)
 Vue.use(Loading)
+Vue.use(Input)
+Vue.use(Toast)
+Vue.use(Popup)
+Vue.use(Picker)
+Vue.use(DatePicker)
+Vue.use(CascadePicker)

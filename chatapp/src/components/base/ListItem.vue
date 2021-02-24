@@ -1,30 +1,32 @@
 <template>
-  <div class="content-wrapper" @click="onClick">
+  <div class="list-item-wrapper">
     <div class="avatar-wrapper">
-      <avatar :imgurl="data.imgurl"></avatar>
+      <avatar :imgurl="avatar"></avatar>
     </div>
-    <div class="content">
-      <div class="name">{{data.name}}</div>
-      <div class="description">{{data.desc}}</div>
+    <div class="list-item-content">
+      <div class="name">{{name}}</div>
+      <div class="description">{{desc}}</div>
     </div>
-    <div class="extend">
+    <div class="list-item-extend">
       <slot name="extra"></slot>
     </div>
   </div>
 </template>
 <script>
-import Avatar from 'components/base/Avatar'
+import Avatar from './Avatar'
 export default {
   props: {
-    // 传进的基本数据
-    data: Object
-  },
-  data () {
-    return {}
-  },
-  methods: {
-    onClick () {
-      this.$emit('selectItem', this.data.id)
+    avatar: {
+      type: String
+    },
+    name: {
+      type: String
+    },
+    desc: {
+      type: String
+    },
+    uid: {
+      type: String
     }
   },
   components: {
@@ -33,7 +35,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.content-wrapper {
+.list-item-wrapper {
   display: flex;
   height: 100%;
   padding: 4px 8px;
@@ -42,7 +44,7 @@ export default {
     width: 50px;
     height: 50px;
   }
-  .content {
+  .list-item-content {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -59,8 +61,8 @@ export default {
       color: #ccc;
     }
   }
-  .extend {
-    width: 50px;
+  .list-item-extend {
+    width: 60px;
     height: 50px;
   }
 }

@@ -12,25 +12,30 @@
       </div>
     </div>
     <div class="content">
-      <div ref="text" class="text-wrapper" :class="isLongText? 'longText': ''">
+      <div class="text-wrapper">
         {{postData.content}}
       </div>
-      <div v-if="isShowFold" @click="showMore" class="showmore">{{foldText}}<i :class="isLongText? 'iconfont icon-arrow-down':'iconfont icon-arrow-up'"></i></div>
-      <div class="img-wrapper">
+      <div class="img-wrapper" v-if="postData.picList.length">
         <div @click="selectPic(index)" class="img-box" v-for="(pic,index) in postData.picList" :key="index">
           <img :src='pic.url' alt="">
         </div>
       </div>
     </div>
     <div class="operator">
-      <div @click="onComment" class="say"><i class="iconfont icon-pinglun"></i></div>
       <div class="like">
-        <span @click="cancelLike" v-if="postData.isLike"><i class='iconfont icon-view'></i></span>
-        <span @click="addLike" v-else><i class="iconfont icon-dianzan"></i></span>
+        <div @click="cancelLike" v-if="postData.isLike">
+          <svg-icon icon-class='dianzan-active' size='20'></svg-icon>
+        </div>
+        <div @click="addLike" v-else>
+          <svg-icon icon-class='dianzan' size='20'></svg-icon>
+        </div>
+      </div>
+      <div @click="onComment" class="comment-btn">
+        <svg-icon icon-class='message' size='20'></svg-icon>
       </div>
     </div>
     <div v-if="postData.likeList.length" class="like-list">
-      <span class="iconfont icon-dianzan"></span>
+      <svg-icon icon-class='dianzan' size='20'></svg-icon>
       <span v-for="(item,index) in postData.likeList" :key="index" class="like-nickname">
         {{item.user.nickname}}
       </span>
@@ -42,27 +47,20 @@
     </div>
     <div class="comment-input">
       <input ref="inputbox" class="input-box" type="text">
-      <button @click="send" class="send-btn">发送</button>
+      <div @click="send" class="send-btn">评论</div>
     </div>
   </div>
 </template>
 
 <script>
-import Avatar from 'components/base/Avatar'
-import service from '@/util/service'
+import Avatar from '_c/base/Avatar'
+import service from '_u/service'
 import { mapGetters } from 'vuex'
 export default {
   props: {
     postData: {
       type: Object,
       default: () => {}
-    }
-  },
-  data () {
-    return {
-      isLongText: false,
-      foldText: '展开',
-      isShowFold: false
     }
   },
   components: {
@@ -72,87 +70,78 @@ export default {
     ...mapGetters(['user'])
   },
   methods: {
-    // 点击后展开收起
-    showMore () {
-      this.isLongText = !this.isLongText
-      if (this.isLongText) {
-        this.foldText = '展开'
-      } else {
-        this.foldText = '收起'
-      }
-    },
-    // 判断是否超出多行文本
-    isMore () {
-      const height = this.$refs.text.clientHeight
-      if (height > 60) {
-        this.isLongText = true
-        this.isShowFold = true
-      }
-    },
     // 点击评论
     onComment () {
-      console.log('评论')
       this.$refs.inputbox.focus()
     },
     // 点赞
     async addLike () {
-      const response = await service.post('post/addlike', {
+      const res = await service.post('post/addlike', {
         postId: this.postData.id
       })
-      if (response.code === 0) {
+      if (res && res.code === 200) {
         this.postData.isLike = true
-        console.log(response.data)
+        // console.log(res.result)
         this.postData.likeList.push({
           post: this.postData.id,
           user: this.user
         })
-        console.log(this.postData.likeList)
       } else {
-        console.log('点赞失败')
+        this.$createToast({
+          type: 'warn',
+          txt: '操作失败',
+          time: 1000
+        }).show()
       }
     },
     // 取消点赞
     async cancelLike () {
-      const response = await service.post('post/cancelLike', {
+      const res = await service.post('post/cancelLike', {
         postId: this.postData.id
       })
-      if (response.code === 0) {
+      if (res && res.code === 200) {
         this.postData.isLike = false
         const index = this.postData.likeList.findIndex((item) => {
           return item.user._id === this.user._id
         })
         this.postData.likeList.splice(index, 1)
       } else {
-        console.log('取消点赞失败')
+        this.$createToast({
+          type: 'warn',
+          txt: '操作失败',
+          time: 1000
+        }).show()
       }
     },
     // 发表评论
     async send () {
       const value = this.$refs.inputbox.value
       if (value) {
-        const resp = await service.post('post/addcomment', {
+        const res = await service.post('post/addcomment', {
           postId: this.postData.id,
           content: value
         })
-        if (resp.code === 0) {
-          console.log(resp.data)
+        if (res && res.code === 200) {
           this.postData.comments.push({
-            content: resp.data.content,
+            content: res.result.content,
             user: this.user
           })
         } else {
-          console.log('评论失败')
+          this.$createToast({
+            type: 'warn',
+            txt: '操作失败',
+            time: 1000
+          }).show()
         }
         this.$refs.inputbox.value = ''
+        this.$refs.inputbox.blur()
       }
     },
     // 点击图片后查看
     selectPic (index) {
-      this.$emit('imgSelect', this.picList, index)
+      const list = this.postData.picList.map(item => item.url)
+      this.$emit('imgSelect', list, index)
     }
-  },
-  mounted () {
-    this.isMore()
   }
 }
 </script>
@@ -210,21 +199,23 @@ export default {
     color: #4e61f2;
   }
   .operator {
-    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
     padding: 5px 0px;
-    .like {
-      float: right;
-      margin-right: 20px;
-      .icon-dianzan {
-        font-size: 24px;
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      display: block;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      transform: scale(1, 0.5);
+      background: #ccc;
     }
-    .say {
-      float: right;
-      margin-right: 10px;
-      .icon-pinglun {
-        font-size: 26px;
-      }
+    .comment-btn {
+      margin-left: 10px;
     }
   }
   .like-list {
@@ -249,17 +240,24 @@ export default {
     }
   }
   .comment-input {
-    margin-top: 5px;
+    margin-top: 4px;
+    display: flex;
     .input-box {
-      width: 80%;
+      flex: 1;
       padding: 4px;
       outline: none;
+      border-radius: 4px;
       background: #f3f3f3;
     }
     .send-btn {
-      border: 1px solid #ccc;
-      outline: none;
-      margin-left: 5px;
+      width: 40px;
+      margin-left: 10px;
+      color: #fff;
+      text-align: center;
+      font-size: 14px;
+      line-height: 26px;
+      background: #5bc0de;
+      border-radius: 4px;
     }
   }
 }

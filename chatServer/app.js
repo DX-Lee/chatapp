@@ -4,15 +4,17 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const usersRouter = require('./routes/user');
 const postRouter = require('./routes/post')
+const chatRouter = require('./routes/chat')
+const loginRouter = require('./routes/login')
 
 const tokenUtil = require('./util/token')
 const config = require('./config')
 const mongoose = require('mongoose')
 
 //连接数据库
-mongoose.connect('mongodb://127.0.0.1:27017/wechat', {useNewUrlParser: true, useCreateIndex: true})
+mongoose.connect('mongodb://127.0.0.1:27017/wechat', {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
 .then(() => {
     console.log('连接成功')
 }).catch((e) => {
@@ -21,9 +23,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/wechat', {useNewUrlParser: true, use
 const app = express();
 // 跨域配置
 app.use(function (req, res, next) {
-    console.log(req.headers)
+    // console.log(req.headers)
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, wec-access-token, Set-Cookie');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, wec-access-token, Set-Cookie, Sec-Fetch-Dest,Sec-Fetch-Mode, Sec-Fetch-Site');
     res.header('Access-Control-Allow-Credentials', 'true')
     next()
 })
@@ -32,21 +34,21 @@ app.use(function (req, res, next) {
    const token = req.headers['wec-access-token'] || 'notoken'
    const user = tokenUtil.checkToken(token)
    if (user) {
-       req.user = user
-       // 续期
-       tokenUtil.setToken({user, res})
-       next()
+    req.user = user
+    // 续期
+    tokenUtil.setToken({user, res})
+    next()
    } else {
-       // 判断是否在登录态白名单上
-      if (config.tokenApi.indexOf(req.path) < 0) {
-          next()
-          return
-        } else {
-            res.json({
-              code: 403,
-              message: '无效token'
-          })
-        }
+       // 判断是否在需要登录态的名单上
+    console.log(req.path)
+    if (config.tokenApi.indexOf(req.path) < 0) {
+        next()
+    } else {
+        res.json({
+            code: 403,
+            message: '无效token'
+        })
+    }
    }
 })
 app.use(logger('dev'));
@@ -56,6 +58,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter)
+app.use('/api/user', usersRouter);
 app.use('/api/post', postRouter);
+app.use('/api/chat', chatRouter);
+
 module.exports = app;

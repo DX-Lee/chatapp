@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const PostSchema = new mongoose.Schema({
-  content: {type: String, required: true}, // 动态内容
+  content: {type: String}, // 动态内容
   picList: {type: Schema.Types.Mixed}, // 图片内容
   create: {type: Date, default: Date.now}, // 创建时间
   update: {type: Date, default: Date.now},

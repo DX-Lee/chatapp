@@ -3,11 +3,13 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 module.exports = {
+  publicPath: '/chat-demo/',
   chainWebpack: (config) => {
     config.resolve.alias
       .set('@', resolve('src'))
-      .set('components', resolve('src/components'))
-      .set('views', resolve('src/views'))
+      .set('_c', resolve('src/components'))
+      .set('_v', resolve('src/views'))
+      .set('_u', resolve('src/util'))
   },
   css: {
     loaderOptions: {

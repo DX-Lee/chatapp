@@ -6,7 +6,3 @@ export function getCookie (name) {
   }
   return null
 }
-
-export function setCookie (name) {
-  return name
-}

@@ -1,5 +1,5 @@
 <template>
-    <div class="avatar"><img :src="imgurl" alt=""></div>
+    <div class="avatar"><img v-lazy="imgurl" alt=""></div>
 </template>
 <script>
 export default {

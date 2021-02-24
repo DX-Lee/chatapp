@@ -1,11 +1,12 @@
 <template>
+<transition appear name="move">
   <div class="publish-wrapper">
     <div class="top">
       <div class="cancel" @click="cancel">取消</div>
       <div class="btn" @click="publish">发表</div>
     </div>
     <div class="input-wrapper">
-      <textarea v-model="content" @input="onInput" class="text" cols="20" rows="5" placeholder="分享新鲜事..." maxlength="80"></textarea>
+      <textarea v-model="content" @input="onInput" class="text" cols="21" rows="4" placeholder="分享新鲜事..." maxlength="80"></textarea>
       <div class="text-count">
         <span>{{this.textCount}}</span>/80
       </div>
@@ -26,11 +27,12 @@
       </div>
     </div>
   </div>
+</transition>
 </template>
 
 <script>
-import { getCookie } from '@/util/cookie'
-import service from '@/util/service'
+import { getCookie } from '_u/cookie'
+import service from '_u/service'
 export default {
   data () {
     return {
@@ -38,7 +40,7 @@ export default {
       textCount: 0,
       picList: [],
       action: {
-        target: service.baseURL + 'post/uploadimgaliyun',
+        target: service.baseURL + 'post/uploadImgAliyun',
         headers: {
           'wec-access-token': getCookie('token')
         },
@@ -51,7 +53,7 @@ export default {
     // 取消
     cancel () {
       this.$router.push({
-        name: 'Mine',
+        name: 'Post',
         params: {
           ispublish: false
         }
@@ -67,27 +69,29 @@ export default {
         }).show()
         return
       }
-      let dataList
-      if (this.picList.length === 0) {
-        dataList = []
-      } else {
-        dataList = this.picList.map((item) => {
-          return item.response.data
-        })
-      }
-      const rep = await service.post('post/savepost', {
+      const dataList = []
+      this.picList.forEach((item) => {
+        if (item.response.code === 200 && item.response.result.url) {
+          dataList.push(item.response.result)
+        }
+      })
+      const res = await this.$store.dispatch('publishPost', {
         content: this.content,
         picList: dataList
       })
-      if (rep.code === 0) {
+      if (res.code === 200) {
         this.$router.push({
-          name: 'Mine',
+          name: 'Post',
           params: {
             ispublish: true
           }
         })
       } else {
-        console.log('发布失败')
+        this.$createToast({
+          type: 'warn',
+          txt: '发布失败',
+          time: 1000
+        })
       }
     },
     // 输入
@@ -96,28 +100,38 @@ export default {
     },
     // 点击上传的图片
     selectPic () {
-      console.log('click')
+      // console.log('click')
     },
     // 添加完图片后触发
     addPic () {
-      console.log(this.picList)
+      // console.log(this.picList)
     },
     // 删除上传的图片
     deletePic () {
-      console.log('del')
+      // console.log('del')
     },
     // 上传图片失败
     uploadError () {
-      console.log('err')
+      this.$createToast({
+        type: 'warn',
+        txt: '上传失败',
+        time: 1000
+      })
     },
     uploadSuccess () {
-      console.log('suss')
+      // console.log('suss')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.move-enter-active, .move-leave-active {
+  transition: all 0.5s
+}
+.move-enter, .move-leave-to {
+  transform: translateX(100%)
+}
 .publish-wrapper {
   position: fixed;
   top: 0;
