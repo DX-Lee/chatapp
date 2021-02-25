@@ -257,7 +257,6 @@ export default {
     const historyList = storage.read('historyList')
     const account = this.friendInfo.account
     this.history = historyList[account] || []
-    console.log(this.newMsgCount)
     if (this.newMsgCount > 0) {
       this.getNewMessage()
     } else {

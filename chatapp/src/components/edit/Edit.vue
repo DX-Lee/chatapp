@@ -163,13 +163,11 @@ export default {
     handleSuccess (data) {
       this.avatar = data.response.result.url
       this.isEdited = true
-      console.log(data)
     },
     handleError () {
-      console.log('error')
     },
     deletePicture (obj) {
-      console.log(obj)
+      // console.log(obj)
     },
     onEditSignature () {
       this.$router.push({

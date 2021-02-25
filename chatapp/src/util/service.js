@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getCookie } from './cookie'
 import router from '../router/index'
-const baseURL = 'http://localhost:3000/api/'
+const baseURL = 'http://www.9nine.site/wechat/api/'
 const service = axios.create({
   baseURL,
   withCredentials: true,

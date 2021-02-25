@@ -7,7 +7,9 @@ const {
   querySessionList,
   deleteSession
 } = require('../util/chat')
-
+const {
+  queryUserInfo
+} = require('../util/user')
 // 获得历史聊天记录
 router.get('/pullNewMessage', async (req, res, next) => {
   try {
@@ -37,6 +39,7 @@ router.post('/sendChatMessage', async (req, res, next) => {
       toUser: req.body.toUser,
       content: req.body.content
     }
+    const user = await queryUserInfo(req.user.account)
     const result = await createChatMessage(data)
     socket.sendMessage({
       id: req.body.toUser,
@@ -44,7 +47,7 @@ router.post('/sendChatMessage', async (req, res, next) => {
       data: {
         chatId: result.chatId,
         content: req.body.content,
-        fromUser: req.user,
+        fromUser: user,
         create: result.create,
         id: result._id
       }

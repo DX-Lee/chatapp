@@ -50,7 +50,6 @@ const actions = {
           commit('SET_USER', result)
           storage.setAccount(result)
         }
-        console.log(res)
         resolve(res)
       }).catch(error => {
         reject(error)
@@ -151,7 +150,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       service.post('post/publishPost', postData).then(res => {
         if (res.code === 200) {
-          console.log(res)
         }
         resolve(res)
       }).catch(error => {

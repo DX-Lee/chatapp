@@ -74,7 +74,7 @@ export default {
         clearTimeout(this.timer)
       }
       this.timer = setTimeout(() => {
-        const accountList = Storage.$store.get('accountList')
+        const accountList = Storage.$store.get('accountList') || []
         const user = accountList.find((item) => {
           return item.account === this.account
         })

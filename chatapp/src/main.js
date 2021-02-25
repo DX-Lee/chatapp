@@ -17,11 +17,12 @@ Vue.prototype.$bus = EventBus
 Vue.prototype.$storage = storage
 
 Vue.use(VueLazyLoad, {
-  loading: require('./assets/imgs/load.gif')
+  loading: require('./assets/imgs/load.gif'),
+  error: require('./assets/imgs/default.jpg')
 })
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO('http://localhost:3000')
+  connection: SocketIO('http://www.9nine.site')
 }))
 Vue.component('svg-icon', SvgIcon)
 new Vue({
